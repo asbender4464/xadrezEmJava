@@ -1,10 +1,12 @@
 package aplicacao;
 
+import tabuleiro.Posicao;
+
 public class Programa {
 
 	public static void main(String[] args) {
 
-		System.out.println("Alô Mundo! Primeiro projeto em Java nascendo!");
-
+		Posicao pos = new Posicao(3, 5);
+		System.out.println(pos);
 	}
 }
