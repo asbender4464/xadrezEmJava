@@ -53,6 +53,6 @@ public class IU {
                 System.out.print(ANSI_YELLOW + peca + ANSI_RESET);
             }
         }
-    	System.out.println(" ");
+    	System.out.print(" ");
 	}
 }
