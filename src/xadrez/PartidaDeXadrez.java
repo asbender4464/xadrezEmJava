@@ -1,6 +1,5 @@
 package xadrez;
 
-import tabuleiro.Posicao;
 import tabuleiro.Tabuleiro;
 import xadrez.pecas.Rei;
 import xadrez.pecas.Torre;
@@ -28,10 +27,16 @@ public class PartidaDeXadrez {
 		}
 		return matriz;
 	}
+	
+	//Método que usa as 'coordenadas do Xadrez' (coluna e linha), e NÃO as 'matriciais' (linha e coluna).
+	private void colocarNovaPeca(char coluna, int linha, PecaDeXadrez peca) {
+		tabuleiro.colocarPeca(peca, new PosicaoXadrez(coluna, linha).paraPosicao());
+	}
+	
 	//Método Setup Inicial. É responsável por iniciar a partida de xadrez, colocando as peças no tabuleiro.
 	private void setupInicial() {
-		tabuleiro.colocarPeca(new Torre(tabuleiro,Cor.BRANCAS), new Posicao(2,1));
-		tabuleiro.colocarPeca(new Rei(tabuleiro,Cor.PRETAS), new Posicao(0,4));
-		tabuleiro.colocarPeca(new Rei(tabuleiro,Cor.BRANCAS), new Posicao(7,4));
+		colocarNovaPeca('b', 6, new Torre(tabuleiro,Cor.BRANCAS));
+		colocarNovaPeca('e', 8, new Rei(tabuleiro,Cor.PRETAS));
+		colocarNovaPeca('e', 1, new Rei(tabuleiro,Cor.BRANCAS));
 	}
 }
