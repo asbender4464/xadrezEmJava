@@ -41,4 +41,12 @@ public class Tabuleiro {
 	public Peca peca (Posicao posicao) {
 		return pecas[posicao.getLinha()][posicao.getColuna()];
 	}
+	
+	//Método 'Colocar Peca'.
+	public void colocarPeca (Peca peca, Posicao posicao) {
+		pecas[posicao.getLinha()][posicao.getColuna()] = peca;
+		//É preciso informar que esta peça não está mais na posição 'nula'.
+		peca.posicao = posicao;
+	}
+	
 }

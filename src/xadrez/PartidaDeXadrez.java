@@ -1,6 +1,9 @@
 package xadrez;
 
+import tabuleiro.Posicao;
 import tabuleiro.Tabuleiro;
+import xadrez.pecas.Rei;
+import xadrez.pecas.Torre;
 
 public class PartidaDeXadrez {
 	//Esta Classe é o 'coração' do sistema de xadrez.
@@ -11,6 +14,8 @@ public class PartidaDeXadrez {
 	//Construtor padrão
 	public PartidaDeXadrez() {
 		tabuleiro = new Tabuleiro(8, 8);
+		//Chamando o Setup Inicial, para começar a partida, colocando as peças no tabuleiro.
+		setupInicial();
 	}
 	
 	//Método
@@ -22,5 +27,11 @@ public class PartidaDeXadrez {
 			}
 		}
 		return matriz;
+	}
+	//Método Setup Inicial. É responsável por iniciar a partida de xadrez, colocando as peças no tabuleiro.
+	private void setupInicial() {
+		tabuleiro.colocarPeca(new Torre(tabuleiro,Cor.BRANCAS), new Posicao(2,1));
+		tabuleiro.colocarPeca(new Rei(tabuleiro,Cor.PRETAS), new Posicao(0,4));
+		tabuleiro.colocarPeca(new Rei(tabuleiro,Cor.BRANCAS), new Posicao(7,4));
 	}
 }
