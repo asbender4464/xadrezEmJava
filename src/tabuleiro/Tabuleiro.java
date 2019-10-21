@@ -49,6 +49,7 @@ public class Tabuleiro {
 	
 	//Sobrecarga do método, retornando a peça pela posição
 	public Peca peca (Posicao posicao) {
+		//Programação defensiva para verificar se há peça na posição.
 		if (!existePosicao(posicao)) {
 			throw new TabuleiroExcecao("Posição inexistente no tabuleiro.");
 		}
@@ -65,6 +66,21 @@ public class Tabuleiro {
 		//É preciso informar que esta peça não está mais na posição 'nula'.
 		peca.posicao = posicao;
 	}
+	
+	public Peca removerPeca(Posicao posicao) {
+		//Programação defensiva para verificar se há peça na posição.
+		if (!existePosicao(posicao)) {
+			throw new TabuleiroExcecao("Posição inexistente no tabuleiro.");
+		}
+		if (peca(posicao) == null) {
+			return null;
+		}
+		Peca auxiliar = peca(posicao);
+		auxiliar.posicao = null; //A peça foi 'retirada do tabuleiro', sendo representada pelo 'nulo'.
+		pecas[posicao.getLinha()][posicao.getColuna()] = null;
+		return auxiliar;
+	}
+	
 	//Método auxiliar ao 'Existe Posição'
 	public boolean existePosicao(int linha, int coluna) {
 		return linha >= 0 && linha < linhas && coluna >= 0 && coluna < colunas;

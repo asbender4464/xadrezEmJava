@@ -1,5 +1,7 @@
 package xadrez;
 
+import tabuleiro.Peca;
+import tabuleiro.Posicao;
 import tabuleiro.Tabuleiro;
 import xadrez.pecas.Rei;
 import xadrez.pecas.Torre;
@@ -26,6 +28,31 @@ public class PartidaDeXadrez {
 			}
 		}
 		return matriz;
+	}
+	
+	//Método para executar movimento de Xadrez.
+	public PecaDeXadrez executarMovimentoXadrez(PosicaoXadrez origemPosicao, PosicaoXadrez destinoPosicao) {
+		//Convertendo posições recebidas para posição da matriz.
+		Posicao origem = origemPosicao.paraPosicao();
+		Posicao destino = destinoPosicao.paraPosicao();
+		validarOrigemPosicao(origem); //Operação para verificar se há peça na origem definida.
+		Peca pecaCapturada = fazerMovimento(origem, destino);
+		return (PecaDeXadrez)pecaCapturada; //Downcasting para 'PecaDeXadrez', porque a peca capturada era do tipo Peca.
+	}
+	
+	//Método/operação 'fazerMovimento', usada acima.
+	private Peca fazerMovimento(Posicao origem, Posicao destino) {
+		Peca p = tabuleiro.removerPeca(origem); //Colocando a peça a ser movida na variável 'p'.
+		Peca pecaCapturada = tabuleiro.removerPeca(destino); //Remover a possível peça que esteja na posição de destino.
+		tabuleiro.colocarPeca(p, destino); //Colocando a peça 'p' em seu destino.
+		return pecaCapturada;
+	}
+	
+	//Método/operação para 'validar' a origem da posição, usada no método acima.
+	private void validarOrigemPosicao(Posicao posicao) {
+		if (!tabuleiro.haUmaPeca(posicao)) {
+			throw new XadrezExcecao("Não há peça na posição de origem.");
+		}
 	}
 	
 	//Método que usa as 'coordenadas do Xadrez' (coluna e linha), e NÃO as 'matriciais' (linha e coluna).
