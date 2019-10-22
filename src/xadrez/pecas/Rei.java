@@ -14,4 +14,12 @@ public class Rei extends PecaDeXadrez {
 		return "K";
 		//Esta letra 'K', de 'King', substituirá o '-' no tabuleiro.
 	}
+	@Override
+	public boolean[][] movimentosPossiveis() {
+		//Implementação básica para teste de versão.
+		//Criando uma matriz do tipo 'boolean' com a 'mesma dimensão' do tabuleiro.
+		//Por definição, todas as posições desta matriz começam com o status 'false'.
+		boolean [][] matriz = new boolean [getTabuleiro().getLinhas()][getTabuleiro().getColunas()];
+		return matriz;
+	}
 }

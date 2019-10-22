@@ -48,10 +48,15 @@ public class PartidaDeXadrez {
 		return pecaCapturada;
 	}
 	
-	//Método/operação para 'validar' a origem da posição, usada no método acima.
+	//Método/operação para 'validar' a origem da posição, usada no método acima, bem como verificar se há movimentos possíveis
+	//para uma peça.
 	private void validarOrigemPosicao(Posicao posicao) {
 		if (!tabuleiro.haUmaPeca(posicao)) {
 			throw new XadrezExcecao("Não há peça na posição de origem.");
+		}
+		//Verificando se há movimentos possíveis para uma determinada peça.
+		if (!tabuleiro.peca(posicao).haAlgumMovimentoPossivel()) {
+			throw new XadrezExcecao("Não há movimentos possíveis para a peça escolhida.");
 		}
 	}
 	
