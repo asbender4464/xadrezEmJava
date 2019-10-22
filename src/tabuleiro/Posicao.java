@@ -29,6 +29,11 @@ public class Posicao {
 		this.coluna = coluna;
 	}
 	
+	public void setValores(int linha, int coluna) {
+		this.linha = linha;
+		this.coluna = coluna;
+	}
+	
 	//Imprimir posições na tela.
 	@Override
 	public String toString() {

@@ -36,6 +36,7 @@ public class PartidaDeXadrez {
 		Posicao origem = origemPosicao.paraPosicao();
 		Posicao destino = destinoPosicao.paraPosicao();
 		validarOrigemPosicao(origem); //Operação para verificar se há peça na origem definida.
+		validarDestinoPosicao(origem, destino); //Operação para verificar se a posição de destino é válida.
 		Peca pecaCapturada = fazerMovimento(origem, destino);
 		return (PecaDeXadrez)pecaCapturada; //Downcasting para 'PecaDeXadrez', porque a peca capturada era do tipo Peca.
 	}
@@ -57,6 +58,12 @@ public class PartidaDeXadrez {
 		//Verificando se há movimentos possíveis para uma determinada peça.
 		if (!tabuleiro.peca(posicao).haAlgumMovimentoPossivel()) {
 			throw new XadrezExcecao("Não há movimentos possíveis para a peça escolhida.");
+		}
+	}
+	
+	private void validarDestinoPosicao(Posicao origem, Posicao destino) {
+		if (!tabuleiro.peca(origem).movimentoPossivel(destino)) {
+			throw new XadrezExcecao("A peça escolhida não pode ser movida para a posição de destino.");
 		}
 	}
 	
