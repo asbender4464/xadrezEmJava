@@ -26,6 +26,16 @@ public class Programa {
 				System.out.print("Origem: ");
 				PosicaoXadrez origem = IU.lerPosicaoXadrez(sc);
 				
+				boolean[][] movimentosPossiveis = partidaDeXadrez.movimentosPossiveis(origem);
+				IU.clearScreen();
+				IU.imprimaTabuleiro(partidaDeXadrez.getPecas(), movimentosPossiveis);
+				//Acima, 'sobrecarga' do método 'imprimaTabuleiro', colorindo o tabuleiro para mostrar as
+				//posições possíveis para onde uma peça poderá se mover.
+				
+				
+				
+				
+				
 				System.out.println();
 				System.out.print("Destino: ");
 				PosicaoXadrez destino = IU.lerPosicaoXadrez(sc);

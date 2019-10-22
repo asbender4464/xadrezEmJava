@@ -30,6 +30,13 @@ public class PartidaDeXadrez {
 		return matriz;
 	}
 	
+	//Método para identificar movimentos possíveis a partir de uma posição de origem.
+	public boolean[][] movimentosPossiveis (PosicaoXadrez origemPosicao) {
+		Posicao posicao = origemPosicao.paraPosicao();
+		validarOrigemPosicao(posicao);
+		return tabuleiro.peca(posicao).movimentosPossiveis();
+	}
+	
 	//Método para executar movimento de Xadrez.
 	public PecaDeXadrez executarMovimentoXadrez(PosicaoXadrez origemPosicao, PosicaoXadrez destinoPosicao) {
 		//Convertendo posições recebidas para posição da matriz.
