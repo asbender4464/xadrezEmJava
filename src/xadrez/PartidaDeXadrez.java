@@ -10,15 +10,28 @@ public class PartidaDeXadrez {
 	//Esta Classe é o 'coração' do sistema de xadrez.
 	//Aqui serão colocadas as regras do jogo.
 	
+	private int mudarJogador;
+	private Cor jogadorAtual;
 	private Tabuleiro tabuleiro;
-
+	
 	//Construtor padrão
 	public PartidaDeXadrez() {
 		tabuleiro = new Tabuleiro(8, 8);
+		mudarJogador = 1;
+		jogadorAtual = Cor.BRANCAS;
 		//Chamando o Setup Inicial, para começar a partida, colocando as peças no tabuleiro.
 		setupInicial();
 	}
 	
+	//GETs
+	public int getMudarJogador() {
+		return mudarJogador;
+	}
+
+	public Cor getJogadorAtual() {
+		return jogadorAtual;
+	}
+
 	//Método
 	public PecaDeXadrez[][] getPecas() {
 		PecaDeXadrez[][] matriz = new PecaDeXadrez[tabuleiro.getLinhas()][tabuleiro.getColunas()];
@@ -45,6 +58,7 @@ public class PartidaDeXadrez {
 		validarOrigemPosicao(origem); //Operação para verificar se há peça na origem definida.
 		validarDestinoPosicao(origem, destino); //Operação para verificar se a posição de destino é válida.
 		Peca pecaCapturada = fazerMovimento(origem, destino);
+		trocarDeJogador(); //Chama o método, definido abaixo, para trocar de 'player'.
 		return (PecaDeXadrez)pecaCapturada; //Downcasting para 'PecaDeXadrez', porque a peca capturada era do tipo Peca.
 	}
 	
@@ -62,6 +76,10 @@ public class PartidaDeXadrez {
 		if (!tabuleiro.haUmaPeca(posicao)) {
 			throw new XadrezExcecao("Não há peça na posição de origem.");
 		}
+		//Verificar se o jogador 'atual' é o mesmo da 'peça escolhida' para ser movimentada.
+		if (jogadorAtual != ((PecaDeXadrez)tabuleiro.peca(posicao)).getCor()) {
+			throw new XadrezExcecao("A peça escolhida não é sua.");
+		}
 		//Verificando se há movimentos possíveis para uma determinada peça.
 		if (!tabuleiro.peca(posicao).haAlgumMovimentoPossivel()) {
 			throw new XadrezExcecao("Não há movimentos possíveis para a peça escolhida.");
@@ -72,6 +90,12 @@ public class PartidaDeXadrez {
 		if (!tabuleiro.peca(origem).movimentoPossivel(destino)) {
 			throw new XadrezExcecao("A peça escolhida não pode ser movida para a posição de destino.");
 		}
+	}
+	
+	//Método para 'trocar de jogador'.
+	private void trocarDeJogador() {
+		mudarJogador++;
+		jogadorAtual = (jogadorAtual == Cor.BRANCAS) ? Cor.PRETAS : Cor.BRANCAS; //Expressão condicional 'ternária'.
 	}
 	
 	//Método que usa as 'coordenadas do Xadrez' (coluna e linha), e NÃO as 'matriciais' (linha e coluna).

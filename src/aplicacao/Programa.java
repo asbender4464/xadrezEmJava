@@ -21,7 +21,7 @@ public class Programa {
 				IU.clearScreen();
 				
 				//IU = Interface do usuário, uma Classe.
-				IU.imprimaTabuleiro(partidaDeXadrez.getPecas());
+				IU.imprimaPartida(partidaDeXadrez);
 				System.out.println();
 				System.out.print("Origem: ");
 				PosicaoXadrez origem = IU.lerPosicaoXadrez(sc);
