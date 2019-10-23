@@ -1,7 +1,10 @@
 package aplicacao;
 
+import java.util.Arrays;
 import java.util.InputMismatchException;
+import java.util.List;
 import java.util.Scanner;
+import java.util.stream.Collectors;
 
 import xadrez.Cor;
 import xadrez.PartidaDeXadrez;
@@ -55,8 +58,10 @@ public class IU {
 	}
 	
 	//Método 'imprima partida'.
-	public static void imprimaPartida(PartidaDeXadrez partidaDeXadrez) {
+	public static void imprimaPartida(PartidaDeXadrez partidaDeXadrez, List<PecaDeXadrez> capturadas) {
 		imprimaTabuleiro(partidaDeXadrez.getPecas());
+		System.out.println();
+		imprimaPecasCapturadas(capturadas);
 		System.out.println();
 		System.out.println("Rodada: " + partidaDeXadrez.getMudarJogador());
 		System.out.println("Aguardando o movimento do jogador " + partidaDeXadrez.getJogadorAtual());
@@ -103,5 +108,23 @@ public class IU {
             }
         }
     	System.out.print(" ");
+	}
+	
+	//Método paraimprimir na tela a lista de 'peças capturadas'.
+	private static void imprimaPecasCapturadas(List<PecaDeXadrez> capturadas) {
+		//Usando uma 'expressão lambda' para listar todas as peças 'brancas' da lista de 'peças capturadas'.
+		List<PecaDeXadrez> brancas = capturadas.stream().filter(x -> x.getCor() == Cor.BRANCAS).collect(Collectors.toList());
+		//Fazendo a mesma coisa para as peças 'pretas'.
+		List<PecaDeXadrez> pretas = capturadas.stream().filter(x -> x.getCor() == Cor.PRETAS).collect(Collectors.toList());
+		//Abaixo, a lógica para imprimir as listas na tela.
+		System.out.println("PEÇAS CAPTURADAS:");
+		System.out.print("BRANCAS: ");
+		System.out.print(ANSI_WHITE); //Iniciar impressão em 'branco'.
+		System.out.println(Arrays.toString(brancas.toArray())); //Recurso do Java para imprimir listas.
+		System.out.print(ANSI_RESET); //Fazer 'reset' nas cores.
+		System.out.print("PRETAS: ");
+		System.out.print(ANSI_YELLOW); //Iniciar impressão em 'amarelo', para contrastar com o fundo preto.
+		System.out.println(Arrays.toString(pretas.toArray())); //Recurso do Java para imprimir listas.
+		System.out.print(ANSI_RESET); //Fazer 'reset' nas cores.
 	}
 }

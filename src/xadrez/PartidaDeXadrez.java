@@ -1,5 +1,8 @@
 package xadrez;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import tabuleiro.Peca;
 import tabuleiro.Posicao;
 import tabuleiro.Tabuleiro;
@@ -13,6 +16,10 @@ public class PartidaDeXadrez {
 	private int mudarJogador;
 	private Cor jogadorAtual;
 	private Tabuleiro tabuleiro;
+	
+	//Declaração das listas de peças 'capturadas' e peças 'mantidas' no tabuleiro.
+	private List<Peca> pecasNoTabuleiro = new ArrayList<>();
+	private List<Peca> pecasCapturadas = new ArrayList<>();
 	
 	//Construtor padrão
 	public PartidaDeXadrez() {
@@ -67,6 +74,10 @@ public class PartidaDeXadrez {
 		Peca p = tabuleiro.removerPeca(origem); //Colocando a peça a ser movida na variável 'p'.
 		Peca pecaCapturada = tabuleiro.removerPeca(destino); //Remover a possível peça que esteja na posição de destino.
 		tabuleiro.colocarPeca(p, destino); //Colocando a peça 'p' em seu destino.
+		if (pecaCapturada != null) {
+			pecasNoTabuleiro.remove(pecaCapturada); //Remover a peça capturada da lista de peças no tabuleiro.
+			pecasCapturadas.add(pecaCapturada); //Adicionar a peça capturada na respectiva lista.
+		}
 		return pecaCapturada;
 	}
 	
@@ -101,6 +112,7 @@ public class PartidaDeXadrez {
 	//Método que usa as 'coordenadas do Xadrez' (coluna e linha), e NÃO as 'matriciais' (linha e coluna).
 	private void colocarNovaPeca(char coluna, int linha, PecaDeXadrez peca) {
 		tabuleiro.colocarPeca(peca, new PosicaoXadrez(coluna, linha).paraPosicao());
+		pecasNoTabuleiro.add(peca); //Além de colocar a peça no tabuleiro (acima), coloca-se também na lista de peças no tabuleiro.
 	}
 	
 	//Método Setup Inicial. É responsável por iniciar a partida de xadrez, colocando as peças no tabuleiro.

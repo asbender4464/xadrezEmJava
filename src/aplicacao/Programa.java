@@ -1,6 +1,8 @@
 package aplicacao;
 
+import java.util.ArrayList;
 import java.util.InputMismatchException;
+import java.util.List;
 import java.util.Scanner;
 
 import xadrez.PartidaDeXadrez;
@@ -14,6 +16,7 @@ public class Programa {
 
 		Scanner sc = new Scanner(System.in);
 		PartidaDeXadrez partidaDeXadrez = new PartidaDeXadrez();
+		List<PecaDeXadrez> capturadas = new ArrayList<>();
 		
 		while(true) { //Neste momento não há programação de cheque-mate e o programa ficará em 'loop', pelo parâmetro 'true'.
 			try {
@@ -21,7 +24,7 @@ public class Programa {
 				IU.clearScreen();
 				
 				//IU = Interface do usuário, uma Classe.
-				IU.imprimaPartida(partidaDeXadrez);
+				IU.imprimaPartida(partidaDeXadrez, capturadas);
 				System.out.println();
 				System.out.print("Origem: ");
 				PosicaoXadrez origem = IU.lerPosicaoXadrez(sc);
@@ -37,6 +40,11 @@ public class Programa {
 				PosicaoXadrez destino = IU.lerPosicaoXadrez(sc);
 				
 				PecaDeXadrez pecaCapturada = partidaDeXadrez.executarMovimentoXadrez(origem, destino);
+				
+				//Condição para inserir uma 'peça capturada' na lista de 'peças capturadas'.
+				if (pecaCapturada != null) {
+					capturadas.add(pecaCapturada);
+				}
 			}
 			catch(XadrezExcecao e) {
 				System.out.println(e.getMessage());
