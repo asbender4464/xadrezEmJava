@@ -32,10 +32,6 @@ public class Programa {
 				//Acima, 'sobrecarga' do método 'imprimaTabuleiro', colorindo o tabuleiro para mostrar as
 				//posições possíveis para onde uma peça poderá se mover.
 				
-				
-				
-				
-				
 				System.out.println();
 				System.out.print("Destino: ");
 				PosicaoXadrez destino = IU.lerPosicaoXadrez(sc);
