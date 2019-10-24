@@ -64,7 +64,11 @@ public class IU {
 		imprimaPecasCapturadas(capturadas);
 		System.out.println();
 		System.out.println("Rodada: " + partidaDeXadrez.getMudarJogador());
-		System.out.println("Aguardando o movimento do jogador " + partidaDeXadrez.getJogadorAtual());
+		System.out.println("Aguardando o movimento das " + partidaDeXadrez.getJogadorAtual());
+		//Verificando se o adversário está em 'xeque'. Se SIM, ele será alertado para esta situação.
+		if (partidaDeXadrez.getXeque()) {
+			System.out.println("Xeque!");
+		}
 	}
 	
 	//Criando o Método 'imprimaTabuleiro'.

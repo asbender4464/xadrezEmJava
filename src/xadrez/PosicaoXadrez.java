@@ -49,7 +49,7 @@ public class PosicaoXadrez {
 	//Método "Da Posição", que é a operação inversa do método acima.
 	//É preciso fazer um 'casting' para 'char', pois a conversão não é automática.
 	protected static PosicaoXadrez daPosicao(Posicao posicao) {
-		return new PosicaoXadrez((char)('a'-posicao.getColuna()), 8 - posicao.getLinha());
+		return new PosicaoXadrez((char)('a'+ posicao.getColuna()), 8 - posicao.getLinha());
 	}
 	//Fazendo o 'toString' da posição.
 	//Nota 1: a notação do xadrez é 'coluna e linha', e não a usual, matricial, 'linha e coluna'.

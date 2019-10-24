@@ -2,6 +2,7 @@ package xadrez;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import tabuleiro.Peca;
 import tabuleiro.Posicao;
@@ -16,6 +17,7 @@ public class PartidaDeXadrez {
 	private int mudarJogador;
 	private Cor jogadorAtual;
 	private Tabuleiro tabuleiro;
+	private boolean xeque; //Criando a propriedade 'xeque'. Variáveis 'boolean', por padrão, nascem com o status 'false'.
 	
 	//Declaração das listas de peças 'capturadas' e peças 'mantidas' no tabuleiro.
 	private List<Peca> pecasNoTabuleiro = new ArrayList<>();
@@ -39,6 +41,11 @@ public class PartidaDeXadrez {
 		return jogadorAtual;
 	}
 
+	//Criando um método 'Get Xeque' para o método 'xeque' poder expor a sua propriedade na classe Programa.
+	public boolean getXeque() {
+		return xeque;
+	}
+	
 	//Método
 	public PecaDeXadrez[][] getPecas() {
 		PecaDeXadrez[][] matriz = new PecaDeXadrez[tabuleiro.getLinhas()][tabuleiro.getColunas()];
@@ -65,6 +72,17 @@ public class PartidaDeXadrez {
 		validarOrigemPosicao(origem); //Operação para verificar se há peça na origem definida.
 		validarDestinoPosicao(origem, destino); //Operação para verificar se a posição de destino é válida.
 		Peca pecaCapturada = fazerMovimento(origem, destino);
+		
+		//Procedimento para verificar se, após a jogada, o próprio 'player' se colocou em xeque, o que implicará em anulação da jogada.
+		if (testeXeque(jogadorAtual)) {
+			desfazerMovimento(origem, destino, pecaCapturada);
+			throw new XadrezExcecao("Tu não podes te colocar em xeque!");
+		}
+		
+		//Procedimento para verificar se o 'oponente' ficou em xeque após a jogada, mudando para 'true' o status da variável 'xeque'.
+		//Usar-se-á uma 'expressão condicional ternária'.
+		xeque = (testeXeque(oponente(jogadorAtual))) ? true : false;
+		
 		trocarDeJogador(); //Chama o método, definido abaixo, para trocar de 'player'.
 		return (PecaDeXadrez)pecaCapturada; //Downcasting para 'PecaDeXadrez', porque a peca capturada era do tipo Peca.
 	}
@@ -79,6 +97,19 @@ public class PartidaDeXadrez {
 			pecasCapturadas.add(pecaCapturada); //Adicionar a peça capturada na respectiva lista.
 		}
 		return pecaCapturada;
+	}
+	
+	//Método para 'desfazer movimento'. Por exemplo, o Rei 'se colocou em xeque', o que é uma jogada irregular e precisa ser desfeita.
+	private void desfazerMovimento(Posicao origem, Posicao destino, Peca pecaCapturada) {
+		//A lógica do método consiste em 'desfazer' o método acima, 'fazerMovimento'.
+		Peca p = tabuleiro.removerPeca(destino);
+		tabuleiro.colocarPeca(p, origem);
+		
+		if (pecaCapturada != null) {
+			tabuleiro.colocarPeca(pecaCapturada, destino);
+			pecasCapturadas.remove(pecaCapturada);
+			pecasNoTabuleiro.add(pecaCapturada);
+		}
 	}
 	
 	//Método/operação para 'validar' a origem da posição, usada no método acima, bem como verificar se há movimentos possíveis
@@ -107,6 +138,44 @@ public class PartidaDeXadrez {
 	private void trocarDeJogador() {
 		mudarJogador++;
 		jogadorAtual = (jogadorAtual == Cor.BRANCAS) ? Cor.PRETAS : Cor.BRANCAS; //Expressão condicional 'ternária'.
+	}
+	
+	//Método para devolver o jogo ao oponente.
+	private Cor oponente(Cor cor) {
+		return (cor == Cor.BRANCAS) ? Cor.PRETAS : Cor.BRANCAS;
+	}
+	
+	//Método para localizar o Rei de uma determinada cor.
+	//No método há o uso da 'função lambda', com 'downcast'da classe 'Peca' para a Classe 'PecaDeXadrez'.
+	private PecaDeXadrez rei(Cor cor) {
+		List<Peca> lista = pecasNoTabuleiro.stream().filter(x -> ((PecaDeXadrez)x).getCor() == cor).collect(Collectors.toList());
+		for (Peca p : lista) {
+			if (p instanceof Rei) { //Verificar se a peça 'p' é uma instância de Rei.
+				return (PecaDeXadrez)p; //'Downcast'.
+			}
+		}
+		//Caso a lista seja 'exaurida' e nenhum Rei seja encontrado, lança-se a 'exceção' abaixo.
+		//Essa exceção não devará ocorrer nunca! Se acontecer, é sinal de erro no programa e o mesmo precisará ser encerrado.
+		//Logo, 'não haverá' tratamento da exceção.
+		throw new IllegalStateException("Não existe o Rei da cor " + cor + " no tabuleiro."); //Exceção nativa do Java.
+	}
+	
+	//Método para verificar se o Rei está em xeque.
+	//O algoritmo verificará todas as peças dos adversário, examinando a possibilidade que cada uma tem para vir a ocupar
+	//a casa do Rei, o que evidencia o 'xeque'.
+	private boolean testeXeque(Cor cor) {
+		//Identificando a posição do Rei no formato de 'matriz'.
+		Posicao posicaoDoRei = rei(cor).getPosicaoXadrez().paraPosicao();
+		//Criando uma lista das peças do 'oponente' desta cor. Nesta lista, chama-se o método 'oponente', criado acima.
+		List<Peca> pecasDoOponente = pecasNoTabuleiro.stream().filter(x -> ((PecaDeXadrez)x).getCor() == oponente(cor)).collect(Collectors.toList());
+		//Para cada peça da lista acima, haverá a verificação de possibilidade de ameaça à posição do Rei.
+		for (Peca p : pecasDoOponente) {
+			boolean[][] matriz = p.movimentosPossiveis();
+			if (matriz[posicaoDoRei.getLinha()][posicaoDoRei.getColuna()]) {
+				return true;
+			}
+		}
+		return false;
 	}
 	
 	//Método que usa as 'coordenadas do Xadrez' (coluna e linha), e NÃO as 'matriciais' (linha e coluna).

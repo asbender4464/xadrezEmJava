@@ -19,6 +19,13 @@ public abstract class PecaDeXadrez extends Peca {
 		return cor;
 	}
 
+	//Método para obter a posição de uma peça de xadrez, no formato do 'xadrez', ou seja, 'letra e número'
+	//De acordo com o diagrama UML, a aplicação não deve permitir acesso direto à 'matriz', que é definida
+	//na Classe Peca.
+	public PosicaoXadrez getPosicaoXadrez() {
+		return PosicaoXadrez.daPosicao(posicao);
+	}
+	
 	//SET comentado para que não se tenha uma cor modificada.
 	//public void setCor(Cor cor) {
 	//	this.cor = cor;
