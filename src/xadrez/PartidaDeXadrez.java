@@ -18,6 +18,7 @@ public class PartidaDeXadrez {
 	private Cor jogadorAtual;
 	private Tabuleiro tabuleiro;
 	private boolean xeque; //Criando a propriedade 'xeque'. Variáveis 'boolean', por padrão, nascem com o status 'false'.
+	private boolean xequeMate; //Criando a propriedade 'Xeque-Mate'.
 	
 	//Declaração das listas de peças 'capturadas' e peças 'mantidas' no tabuleiro.
 	private List<Peca> pecasNoTabuleiro = new ArrayList<>();
@@ -45,6 +46,11 @@ public class PartidaDeXadrez {
 	public boolean getXeque() {
 		return xeque;
 	}
+	
+	//Criando um método 'Get Xeque-Mate' para o método 'xeque' poder expor a sua propriedade na classe Programa.
+		public boolean getXequeMate() {
+			return xequeMate;
+		}
 	
 	//Método
 	public PecaDeXadrez[][] getPecas() {
@@ -83,7 +89,13 @@ public class PartidaDeXadrez {
 		//Usar-se-á uma 'expressão condicional ternária'.
 		xeque = (testeXeque(oponente(jogadorAtual))) ? true : false;
 		
+		//Testando o status de 'xeque-mate'.
+		if (testeXequeMate(oponente(jogadorAtual))) {
+			xequeMate = true;
+		}
+		else {
 		trocarDeJogador(); //Chama o método, definido abaixo, para trocar de 'player'.
+		}
 		return (PecaDeXadrez)pecaCapturada; //Downcasting para 'PecaDeXadrez', porque a peca capturada era do tipo Peca.
 	}
 	
@@ -178,6 +190,46 @@ public class PartidaDeXadrez {
 		return false;
 	}
 	
+	//Método, complexo, para testar se o Rei está em 'Xeque-Mate'.
+	private boolean testeXequeMate(Cor cor) {
+		//Em primeiro lugar, ratificar que, pelo menos, o Rei está em xeque.
+		if (!testeXeque(cor)) {
+			return false;
+		}
+		//Criação de lista contendo todas as peças que há no tabuleiro, do Rei que está em cheque.
+		List<Peca> lista = pecasNoTabuleiro.stream().filter(x -> ((PecaDeXadrez)x).getCor() == cor).collect(Collectors.toList());
+		//Percorrendo a lista criada acima.
+		for (Peca p : lista) {
+			//Lógica para averiguar se algum movimento de peça pode retirar o jogador ameaçado, da posição de 'xeque'.
+			boolean[][] matriz = p.movimentosPossiveis();
+			for (int i=0; i<tabuleiro.getLinhas(); i++) {
+				for (int j=0; j<tabuleiro.getColunas(); j++) {
+					//Teste: esta posição da matriz é um movimento possível?
+					if (matriz[i][j]) {
+						/*
+						 * No código abaixo, é preciso identificar a posição de uma peça, o que não é possível usando-se
+						 * 'p.posicao', visto que o atributo 'posicao' é do tipo 'protected' e está fora deste pacote. A solução é
+						 * fazer um 'downcasting' para a classe 'PecaDeXadrez', e a partir disso, é possível usar um 'get'
+						 * para identificar a posição na forma de coordenadas do xadrez e, após, converter para as coordenadas matriciais.
+						 */
+						Posicao origem = ((PecaDeXadrez)p).getPosicaoXadrez().paraPosicao();
+						Posicao destino = new Posicao(i, j);
+						Peca pecaCapturada = fazerMovimento(origem, destino);
+						//Verificando se a posição de 'xeque' persiste após o movimento.
+						boolean testeXeque = testeXeque(cor);
+						//Como o movimento acima foi somente para 'testar' a saída do xeque, é preciso desfazê-lo, conforme abaixo.
+						desfazerMovimento(origem, destino, pecaCapturada);
+						//Se não estava em xeque, este movimento tiraria o Rei da posição de perigo, e o programa deveria registrar
+						//que o jogador estaria fora do 'xeque' após a jogada.
+						if (!testeXeque) {
+							return false;
+						}
+					}
+				}
+			}
+		}
+		return true;
+	}
 	//Método que usa as 'coordenadas do Xadrez' (coluna e linha), e NÃO as 'matriciais' (linha e coluna).
 	private void colocarNovaPeca(char coluna, int linha, PecaDeXadrez peca) {
 		tabuleiro.colocarPeca(peca, new PosicaoXadrez(coluna, linha).paraPosicao());
@@ -186,18 +238,11 @@ public class PartidaDeXadrez {
 	
 	//Método Setup Inicial. É responsável por iniciar a partida de xadrez, colocando as peças no tabuleiro.
 	private void setupInicial() {
-		colocarNovaPeca('c', 1, new Torre(tabuleiro, Cor.BRANCAS));
-		colocarNovaPeca('c', 2, new Torre(tabuleiro, Cor.BRANCAS));
-		colocarNovaPeca('d', 2, new Torre(tabuleiro, Cor.BRANCAS));
-		colocarNovaPeca('e', 2, new Torre(tabuleiro, Cor.BRANCAS));
-		colocarNovaPeca('e', 1, new Torre(tabuleiro, Cor.BRANCAS));
-		colocarNovaPeca('d', 1, new Rei(tabuleiro, Cor.BRANCAS));
-
-		colocarNovaPeca('c', 7, new Torre(tabuleiro, Cor.PRETAS));
-		colocarNovaPeca('c', 8, new Torre(tabuleiro, Cor.PRETAS));
-		colocarNovaPeca('d', 7, new Torre(tabuleiro, Cor.PRETAS));
-		colocarNovaPeca('e', 7, new Torre(tabuleiro, Cor.PRETAS));
-		colocarNovaPeca('e', 8, new Torre(tabuleiro, Cor.PRETAS));
-		colocarNovaPeca('d', 8, new Rei(tabuleiro, Cor.PRETAS));
+		colocarNovaPeca('h', 7, new Torre(tabuleiro, Cor.BRANCAS));
+		colocarNovaPeca('d', 1, new Torre(tabuleiro, Cor.BRANCAS));
+		colocarNovaPeca('e', 1, new Rei(tabuleiro, Cor.BRANCAS));
+		
+		colocarNovaPeca('b', 8, new Torre(tabuleiro, Cor.PRETAS));
+		colocarNovaPeca('a', 8, new Rei(tabuleiro, Cor.PRETAS));
 	}
 }

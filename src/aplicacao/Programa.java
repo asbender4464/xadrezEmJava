@@ -18,7 +18,7 @@ public class Programa {
 		PartidaDeXadrez partidaDeXadrez = new PartidaDeXadrez();
 		List<PecaDeXadrez> capturadas = new ArrayList<>();
 		
-		while(true) { //Neste momento não há programação de cheque-mate e o programa ficará em 'loop', pelo parâmetro 'true'.
+		while(!partidaDeXadrez.getXequeMate()) { //O programa rodará até que haja um Xeque-Mate.
 			try {
 				//Chamando o método de limpeza de tabuleiro antes de imprimi-lo.
 				IU.clearScreen();
@@ -55,5 +55,8 @@ public class Programa {
 				sc.nextLine(); //Esta linha faz o programa esperar até o usuário teclar ENTER.
 			}
 		}
+		//Havendo o 'xeque-mate', o laço 'while' termina, limpa-se a tela e imprime-se o tabuleiro em sua forma final.
+		IU.clearScreen();
+		IU.imprimaPartida(partidaDeXadrez, capturadas);
 	}
 }

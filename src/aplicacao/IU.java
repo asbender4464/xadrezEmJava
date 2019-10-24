@@ -64,11 +64,18 @@ public class IU {
 		imprimaPecasCapturadas(capturadas);
 		System.out.println();
 		System.out.println("Rodada: " + partidaDeXadrez.getMudarJogador());
+		//Verificando se o jogador está em 'xeque-mate'. Se sim, imprimir mensagem de fim de jogo.
+		if (!partidaDeXadrez.getXequeMate()) {
 		System.out.println("Aguardando o movimento das " + partidaDeXadrez.getJogadorAtual());
-		//Verificando se o adversário está em 'xeque'. Se SIM, ele será alertado para esta situação.
-		if (partidaDeXadrez.getXeque()) {
-			System.out.println("Xeque!");
+			//Verificando se o adversário está em 'xeque'. Se SIM, ele será alertado para esta situação.
+			if (partidaDeXadrez.getXeque()) {
+				System.out.println("Xeque!");
+			}
 		}
+		else {
+			System.out.println("Xeque-Mate!");
+			System.out.println("Vencedor: " + partidaDeXadrez.getJogadorAtual());
+			}
 	}
 	
 	//Criando o Método 'imprimaTabuleiro'.
