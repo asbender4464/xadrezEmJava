@@ -20,7 +20,7 @@ public abstract class PecaDeXadrez extends Peca {
 		return cor;
 	}
 
-	public int getContadorDeMovomentos() {
+	public int getContadorDeMovimentos() {
 		return contadorDeMovimentos;
 	}
 	

@@ -7,6 +7,7 @@ import java.util.stream.Collectors;
 import tabuleiro.Peca;
 import tabuleiro.Posicao;
 import tabuleiro.Tabuleiro;
+import xadrez.pecas.Peao;
 import xadrez.pecas.Rei;
 import xadrez.pecas.Torre;
 
@@ -240,11 +241,28 @@ public class PartidaDeXadrez {
 	
 	//Método Setup Inicial. É responsável por iniciar a partida de xadrez, colocando as peças no tabuleiro.
 	private void setupInicial() {
-		colocarNovaPeca('h', 7, new Torre(tabuleiro, Cor.BRANCAS));
-		colocarNovaPeca('d', 1, new Torre(tabuleiro, Cor.BRANCAS));
+		colocarNovaPeca('a', 1, new Torre(tabuleiro, Cor.BRANCAS));
 		colocarNovaPeca('e', 1, new Rei(tabuleiro, Cor.BRANCAS));
+		colocarNovaPeca('h', 1, new Torre(tabuleiro, Cor.BRANCAS));
+		colocarNovaPeca('a', 2, new Peao(tabuleiro, Cor.BRANCAS));
+		colocarNovaPeca('b', 2, new Peao(tabuleiro, Cor.BRANCAS));
+		colocarNovaPeca('c', 2, new Peao(tabuleiro, Cor.BRANCAS));
+		colocarNovaPeca('d', 2, new Peao(tabuleiro, Cor.BRANCAS));
+		colocarNovaPeca('e', 2, new Peao(tabuleiro, Cor.BRANCAS));
+		colocarNovaPeca('f', 2, new Peao(tabuleiro, Cor.BRANCAS));
+		colocarNovaPeca('g', 2, new Peao(tabuleiro, Cor.BRANCAS));
+		colocarNovaPeca('h', 2, new Peao(tabuleiro, Cor.BRANCAS));
 		
-		colocarNovaPeca('b', 8, new Torre(tabuleiro, Cor.PRETAS));
-		colocarNovaPeca('a', 8, new Rei(tabuleiro, Cor.PRETAS));
+		colocarNovaPeca('a', 8, new Torre(tabuleiro, Cor.PRETAS));
+		colocarNovaPeca('e', 8, new Rei(tabuleiro, Cor.PRETAS));
+		colocarNovaPeca('h', 8, new Torre(tabuleiro, Cor.PRETAS));
+		colocarNovaPeca('a', 7, new Peao(tabuleiro, Cor.PRETAS));
+		colocarNovaPeca('b', 7, new Peao(tabuleiro, Cor.PRETAS));
+		colocarNovaPeca('c', 7, new Peao(tabuleiro, Cor.PRETAS));
+		colocarNovaPeca('d', 7, new Peao(tabuleiro, Cor.PRETAS));
+		colocarNovaPeca('e', 7, new Peao(tabuleiro, Cor.PRETAS));
+		colocarNovaPeca('f', 7, new Peao(tabuleiro, Cor.PRETAS));
+		colocarNovaPeca('g', 7, new Peao(tabuleiro, Cor.PRETAS));
+		colocarNovaPeca('h', 7, new Peao(tabuleiro, Cor.PRETAS));
 	}
 }
