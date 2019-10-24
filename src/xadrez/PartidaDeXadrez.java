@@ -101,7 +101,8 @@ public class PartidaDeXadrez {
 	
 	//Método/operação 'fazerMovimento', usada acima.
 	private Peca fazerMovimento(Posicao origem, Posicao destino) {
-		Peca p = tabuleiro.removerPeca(origem); //Colocando a peça a ser movida na variável 'p'.
+		PecaDeXadrez p = (PecaDeXadrez)tabuleiro.removerPeca(origem); //Colocando a peça a ser movida na variável 'p'.
+		p.incrementarContadorDeMovimentos();
 		Peca pecaCapturada = tabuleiro.removerPeca(destino); //Remover a possível peça que esteja na posição de destino.
 		tabuleiro.colocarPeca(p, destino); //Colocando a peça 'p' em seu destino.
 		if (pecaCapturada != null) {
@@ -114,7 +115,8 @@ public class PartidaDeXadrez {
 	//Método para 'desfazer movimento'. Por exemplo, o Rei 'se colocou em xeque', o que é uma jogada irregular e precisa ser desfeita.
 	private void desfazerMovimento(Posicao origem, Posicao destino, Peca pecaCapturada) {
 		//A lógica do método consiste em 'desfazer' o método acima, 'fazerMovimento'.
-		Peca p = tabuleiro.removerPeca(destino);
+		PecaDeXadrez p = (PecaDeXadrez)tabuleiro.removerPeca(destino);
+		p.decrementarContadorDeMovimentos();
 		tabuleiro.colocarPeca(p, origem);
 		
 		if (pecaCapturada != null) {

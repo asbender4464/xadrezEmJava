@@ -6,19 +6,34 @@ import tabuleiro.Tabuleiro;
 
 public abstract class PecaDeXadrez extends Peca {
 	
-	//Atributo
+	//Atributos
 	private Cor cor;
+	private int contadorDeMovimentos;
 
 	public PecaDeXadrez(Tabuleiro tabuleiro, Cor cor) {
 		super(tabuleiro);
 		this.cor = cor;
 	}
 
-	//GET e SET
+	//GETs
 	public Cor getCor() {
 		return cor;
 	}
 
+	public int getContadorDeMovomentos() {
+		return contadorDeMovimentos;
+	}
+	
+	//Método para incrementar o 'contador de movimentos'.
+	public void incrementarContadorDeMovimentos () {
+		contadorDeMovimentos++;
+	}
+
+	//Método para decrementar o 'contador de movimentos'.
+	public void decrementarContadorDeMovimentos () {
+		contadorDeMovimentos--;
+	}
+	
 	//Método para obter a posição de uma peça de xadrez, no formato do 'xadrez', ou seja, 'letra e número'
 	//De acordo com o diagrama UML, a aplicação não deve permitir acesso direto à 'matriz', que é definida
 	//na Classe Peca.
