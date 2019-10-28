@@ -23,6 +23,7 @@ public class PartidaDeXadrez {
 	private Tabuleiro tabuleiro;
 	private boolean xeque; //Criando a propriedade 'xeque'. Variáveis 'boolean', por padrão, nascem com o status 'false'.
 	private boolean xequeMate; //Criando a propriedade 'Xeque-Mate'.
+	private PecaDeXadrez vulneravelAoEnPassant; //Criando a propriedade 'En Passant'. Por padrão esta variável inicia 'nula'.
 	
 	//Declaração das listas de peças 'capturadas' e peças 'mantidas' no tabuleiro.
 	private List<Peca> pecasNoTabuleiro = new ArrayList<>();
@@ -55,6 +56,11 @@ public class PartidaDeXadrez {
 		public boolean getXequeMate() {
 			return xequeMate;
 		}
+		
+	//Criando um método 'Get En Passant'
+	public PecaDeXadrez getVulneravelAoEnPassant() {
+		return vulneravelAoEnPassant;
+	}
 	
 	//Método
 	public PecaDeXadrez[][] getPecas() {
@@ -89,6 +95,9 @@ public class PartidaDeXadrez {
 			throw new XadrezExcecao("Tu não podes te colocar em xeque!");
 		}
 		
+		//Definição de variável auxiliar, a ser usada em caso de jogada 'En Passant'.
+		PecaDeXadrez pecaMovida = (PecaDeXadrez)tabuleiro.peca(destino);
+		
 		//Procedimento para verificar se o 'oponente' ficou em xeque após a jogada, mudando para 'true' o status da variável 'xeque'.
 		//Usar-se-á uma 'expressão condicional ternária'.
 		xeque = (testeXeque(oponente(jogadorAtual))) ? true : false;
@@ -100,6 +109,15 @@ public class PartidaDeXadrez {
 		else {
 		trocarDeJogador(); //Chama o método, definido abaixo, para trocar de 'player'.
 		}
+		
+		//Teste para verificar se um Peão fez seu movimento inicial com 2 casas e está 'vulnerável' ao 'En Passant'.
+		if (pecaMovida instanceof Peao && (destino.getLinha() == origem.getLinha() - 2 || destino.getLinha() == origem.getLinha() + 2)) {
+			vulneravelAoEnPassant = pecaMovida;
+		}
+		else {
+			vulneravelAoEnPassant = null;
+		}
+		
 		return (PecaDeXadrez)pecaCapturada; //Downcasting para 'PecaDeXadrez', porque a peca capturada era do tipo Peca.
 	}
 	
@@ -113,6 +131,7 @@ public class PartidaDeXadrez {
 			pecasNoTabuleiro.remove(pecaCapturada); //Remover a peça capturada da lista de peças no tabuleiro.
 			pecasCapturadas.add(pecaCapturada); //Adicionar a peça capturada na respectiva lista.
 		}
+		
 		//Movimento especial: Roque pequeno.
 		if (p instanceof Rei && destino.getColuna() == origem.getColuna() + 2) {
 			Posicao origemT = new Posicao(origem.getLinha(), origem.getColuna() + 3);
@@ -122,13 +141,31 @@ public class PartidaDeXadrez {
 			torre.incrementarContadorDeMovimentos();
 		}
 		//Movimento especial: Roque grande.
-				if (p instanceof Rei && destino.getColuna() == origem.getColuna() - 2) {
-					Posicao origemT = new Posicao(origem.getLinha(), origem.getColuna() - 4);
-					Posicao destinoT = new Posicao(origem.getLinha(), origem.getColuna() - 1);
-					PecaDeXadrez torre =(PecaDeXadrez)tabuleiro.removerPeca(origemT);
-					tabuleiro.colocarPeca(torre, destinoT);
-					torre.incrementarContadorDeMovimentos();
+		if (p instanceof Rei && destino.getColuna() == origem.getColuna() - 2) {
+			Posicao origemT = new Posicao(origem.getLinha(), origem.getColuna() - 4);
+			Posicao destinoT = new Posicao(origem.getLinha(), origem.getColuna() - 1);
+			PecaDeXadrez torre =(PecaDeXadrez)tabuleiro.removerPeca(origemT);
+			tabuleiro.colocarPeca(torre, destinoT);
+			torre.incrementarContadorDeMovimentos();
+		}
+				
+		//Movimento especial: En Passant, captura fora do padrão das demais peças/jogadas.
+		if (p instanceof Peao) {
+			//Se o Peao se moveu em 'diagonal' e não havia peça na casa de 'destino', trata-se de 'En Passant'. Teste abaixo.
+			if (origem.getColuna() != destino.getColuna() && pecaCapturada == null) {
+				Posicao posicaoDoPeao;
+				if (p.getCor() == Cor.BRANCAS) {
+					posicaoDoPeao = new Posicao(destino.getLinha() + 1, destino.getColuna());
 				}
+				else {
+					posicaoDoPeao = new Posicao(destino.getLinha() - 1, destino.getColuna());
+				}
+				pecaCapturada = tabuleiro.removerPeca(posicaoDoPeao);
+				pecasCapturadas.add(pecaCapturada);
+				pecasNoTabuleiro.remove(pecaCapturada);
+			}
+		}
+				
 		return pecaCapturada;
 	}
 	
@@ -144,7 +181,7 @@ public class PartidaDeXadrez {
 			pecasCapturadas.remove(pecaCapturada);
 			pecasNoTabuleiro.add(pecaCapturada);
 		}
-		//Movimento especial: Roque pequeno.
+		//(Desfazer) Movimento especial: Roque pequeno.
 		if (p instanceof Rei && destino.getColuna() == origem.getColuna() + 2) {
 			Posicao origemT = new Posicao(origem.getLinha(), origem.getColuna() + 3);
 			Posicao destinoT = new Posicao(origem.getLinha(), origem.getColuna() + 1);
@@ -152,13 +189,28 @@ public class PartidaDeXadrez {
 			tabuleiro.colocarPeca(torre, origemT);
 			torre.decrementarContadorDeMovimentos();
 		}
-		//Movimento especial: Roque grande.
+		//(Desfazer) Movimento especial: Roque grande.
 		if (p instanceof Rei && destino.getColuna() == origem.getColuna() - 2) {
 			Posicao origemT = new Posicao(origem.getLinha(), origem.getColuna() - 4);
 			Posicao destinoT = new Posicao(origem.getLinha(), origem.getColuna() - 1);
 			PecaDeXadrez torre =(PecaDeXadrez)tabuleiro.removerPeca(destinoT);
 			tabuleiro.colocarPeca(torre, origemT);
 			torre.decrementarContadorDeMovimentos();
+		}
+		//(Desfazer) Movimento especial: En Passant, captura fora do padrão das demais peças/jogadas.
+		if (p instanceof Peao) {
+			//Se o Peao se moveu em 'diagonal' e não havia peça na casa de 'destino', trata-se de 'En Passant'. Teste abaixo.
+			if (origem.getColuna() != destino.getColuna() && pecaCapturada == vulneravelAoEnPassant) {
+				PecaDeXadrez peao = (PecaDeXadrez)tabuleiro.removerPeca(destino);
+				Posicao posicaoDoPeao;
+				if (p.getCor() == Cor.BRANCAS) {
+					posicaoDoPeao = new Posicao(3, destino.getColuna());
+				}
+				else {
+					posicaoDoPeao = new Posicao(4, destino.getColuna());
+				}
+				tabuleiro.colocarPeca(peao, posicaoDoPeao);
+			}
 		}
 	}
 	
@@ -284,14 +336,14 @@ public class PartidaDeXadrez {
 		colocarNovaPeca('f', 1, new Bispo(tabuleiro, Cor.BRANCAS));
 		colocarNovaPeca('g', 1, new Cavalo(tabuleiro, Cor.BRANCAS));
 		colocarNovaPeca('h', 1, new Torre(tabuleiro, Cor.BRANCAS));
-		colocarNovaPeca('a', 2, new Peao(tabuleiro, Cor.BRANCAS));
-		colocarNovaPeca('b', 2, new Peao(tabuleiro, Cor.BRANCAS));
-		colocarNovaPeca('c', 2, new Peao(tabuleiro, Cor.BRANCAS));
-		colocarNovaPeca('d', 2, new Peao(tabuleiro, Cor.BRANCAS));
-		colocarNovaPeca('e', 2, new Peao(tabuleiro, Cor.BRANCAS));
-		colocarNovaPeca('f', 2, new Peao(tabuleiro, Cor.BRANCAS));
-		colocarNovaPeca('g', 2, new Peao(tabuleiro, Cor.BRANCAS));
-		colocarNovaPeca('h', 2, new Peao(tabuleiro, Cor.BRANCAS));
+		colocarNovaPeca('a', 2, new Peao(tabuleiro, Cor.BRANCAS, this)); //Auto-referência. Necessário por causa do En Passant. Todos os Peões.
+		colocarNovaPeca('b', 2, new Peao(tabuleiro, Cor.BRANCAS, this));
+		colocarNovaPeca('c', 2, new Peao(tabuleiro, Cor.BRANCAS, this));
+		colocarNovaPeca('d', 2, new Peao(tabuleiro, Cor.BRANCAS, this));
+		colocarNovaPeca('e', 2, new Peao(tabuleiro, Cor.BRANCAS, this));
+		colocarNovaPeca('f', 2, new Peao(tabuleiro, Cor.BRANCAS, this));
+		colocarNovaPeca('g', 2, new Peao(tabuleiro, Cor.BRANCAS, this));
+		colocarNovaPeca('h', 2, new Peao(tabuleiro, Cor.BRANCAS, this));
 		
 		colocarNovaPeca('a', 8, new Torre(tabuleiro, Cor.PRETAS));
 		colocarNovaPeca('b', 8, new Cavalo(tabuleiro, Cor.PRETAS));
@@ -301,13 +353,13 @@ public class PartidaDeXadrez {
 		colocarNovaPeca('f', 8, new Bispo(tabuleiro, Cor.PRETAS));
 		colocarNovaPeca('g', 8, new Cavalo(tabuleiro, Cor.PRETAS));
 		colocarNovaPeca('h', 8, new Torre(tabuleiro, Cor.PRETAS));
-		colocarNovaPeca('a', 7, new Peao(tabuleiro, Cor.PRETAS));
-		colocarNovaPeca('b', 7, new Peao(tabuleiro, Cor.PRETAS));
-		colocarNovaPeca('c', 7, new Peao(tabuleiro, Cor.PRETAS));
-		colocarNovaPeca('d', 7, new Peao(tabuleiro, Cor.PRETAS));
-		colocarNovaPeca('e', 7, new Peao(tabuleiro, Cor.PRETAS));
-		colocarNovaPeca('f', 7, new Peao(tabuleiro, Cor.PRETAS));
-		colocarNovaPeca('g', 7, new Peao(tabuleiro, Cor.PRETAS));
-		colocarNovaPeca('h', 7, new Peao(tabuleiro, Cor.PRETAS));
+		colocarNovaPeca('a', 7, new Peao(tabuleiro, Cor.PRETAS, this)); //Auto-referência. Necessário por causa do En Passant. Todos os Peões.
+		colocarNovaPeca('b', 7, new Peao(tabuleiro, Cor.PRETAS, this));
+		colocarNovaPeca('c', 7, new Peao(tabuleiro, Cor.PRETAS, this));
+		colocarNovaPeca('d', 7, new Peao(tabuleiro, Cor.PRETAS, this));
+		colocarNovaPeca('e', 7, new Peao(tabuleiro, Cor.PRETAS, this));
+		colocarNovaPeca('f', 7, new Peao(tabuleiro, Cor.PRETAS, this));
+		colocarNovaPeca('g', 7, new Peao(tabuleiro, Cor.PRETAS, this));
+		colocarNovaPeca('h', 7, new Peao(tabuleiro, Cor.PRETAS, this));
 	}
 }
