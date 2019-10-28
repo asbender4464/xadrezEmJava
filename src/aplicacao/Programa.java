@@ -12,6 +12,17 @@ import xadrez.XadrezExcecao;
 
 public class Programa {
 
+	/*
+	 * Projeto Jogo de Xadrez em Java - Versão FINAL - 28/Outubro/2019.
+	 * Desenvolvido no Curso JavaCompleto 2019 - Programação Orientada a Objetivos
+	 * Prof. Dr. Nelio Alves
+	 * 
+	 * Nota do Aluno André Silva Bender: optei por desenvolver o programa em Língua Portuguesa (nomes de atributos,
+	 * métodos, variáveis, etc.) e registrar todos os comentários feitos pelo Professor ao longo da construção do projeto.
+	 * Espero, deste modo, ajudar outros colegas em seus estudos. 
+	 */
+	
+	
 	public static void main(String[] args) {
 
 		Scanner sc = new Scanner(System.in);
