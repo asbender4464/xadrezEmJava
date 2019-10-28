@@ -1,5 +1,6 @@
 package xadrez;
 
+import java.security.InvalidParameterException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -24,6 +25,7 @@ public class PartidaDeXadrez {
 	private boolean xeque; //Criando a propriedade 'xeque'. Variáveis 'boolean', por padrão, nascem com o status 'false'.
 	private boolean xequeMate; //Criando a propriedade 'Xeque-Mate'.
 	private PecaDeXadrez vulneravelAoEnPassant; //Criando a propriedade 'En Passant'. Por padrão esta variável inicia 'nula'.
+	private PecaDeXadrez promovido; //Criando a propriedade 'Promoção'.
 	
 	//Declaração das listas de peças 'capturadas' e peças 'mantidas' no tabuleiro.
 	private List<Peca> pecasNoTabuleiro = new ArrayList<>();
@@ -62,6 +64,11 @@ public class PartidaDeXadrez {
 		return vulneravelAoEnPassant;
 	}
 	
+	//Criando um método 'Get Promovido'
+	public PecaDeXadrez getPromovido() {
+		return promovido;
+	}
+	
 	//Método
 	public PecaDeXadrez[][] getPecas() {
 		PecaDeXadrez[][] matriz = new PecaDeXadrez[tabuleiro.getLinhas()][tabuleiro.getColunas()];
@@ -98,6 +105,16 @@ public class PartidaDeXadrez {
 		//Definição de variável auxiliar, a ser usada em caso de jogada 'En Passant'.
 		PecaDeXadrez pecaMovida = (PecaDeXadrez)tabuleiro.peca(destino);
 		
+		//Jogada especial: Promoção (teste da). É preciso fazer o teste abaixo 'antes' de testar o 'xeque' (abaixo) porque, no caso
+		//de haver'promoção', a nova peça (resultante da substituição do peão) poderá colocar o adversário em 'xeque'.
+		promovido = null; //Para garantir a execução de um 'novo teste'.
+		if (pecaMovida instanceof Peao) {
+			if (pecaMovida.getCor() == Cor.BRANCAS && destino.getLinha() == 0 || pecaMovida.getCor() == Cor.PRETAS && destino.getLinha() == 7){
+				promovido = (PecaDeXadrez)tabuleiro.peca(destino); //Para dar 'carga' na variável, indicando e 'existência' de uma promoção.
+				promovido = substituirPecaPromovida("Q"); //Por padrão, o peão será promovido à Rainha. Após, o usuário terá a opção de escolha.
+			}
+		}
+		
 		//Procedimento para verificar se o 'oponente' ficou em xeque após a jogada, mudando para 'true' o status da variável 'xeque'.
 		//Usar-se-á uma 'expressão condicional ternária'.
 		xeque = (testeXeque(oponente(jogadorAtual))) ? true : false;
@@ -119,6 +136,36 @@ public class PartidaDeXadrez {
 		}
 		
 		return (PecaDeXadrez)pecaCapturada; //Downcasting para 'PecaDeXadrez', porque a peca capturada era do tipo Peca.
+	}
+	
+	//Criando o Método 'Substituir Peça Promovida'.
+	public PecaDeXadrez substituirPecaPromovida(String tipo) {
+		//Programação defensiva: 'não aceitar substituição' por peça 'nula'.
+		if (promovido == null) {
+			throw new IllegalStateException("Não há peça para se fazer a promoção.");
+		}
+		//Verificando se a 'letra' (que identifica a peça pela qual o Peão será substituído) escolhida pelo usuário é válida.
+		//B = Bispo; C = Cavalo; T = Torre; Q = Rainha.
+		if (!tipo.equals("B") &&!tipo.equals("C") &&!tipo.equals("T") &&!tipo.equals("Q")) {
+			throw new InvalidParameterException("Tipo inválido para a promoção. Escolha entre 'B', 'C', 'T' ou 'Q'.");
+		}
+		Posicao pos = promovido.getPosicaoXadrez().paraPosicao();
+		Peca p = tabuleiro.removerPeca(pos);
+		pecasNoTabuleiro.remove(p);
+		
+		PecaDeXadrez novaPeca = novaPeca(tipo, promovido.getCor());
+		tabuleiro.colocarPeca(novaPeca, pos);
+		pecasNoTabuleiro.add(novaPeca);
+		
+		return novaPeca;
+	}
+	
+	//Método auxiliar na execução da jogada de Promoção. O método vai 'instanciar' a peça escolhida pelo jogador.
+	private PecaDeXadrez novaPeca(String tipo, Cor cor) {
+		if (tipo.equals("B")) return new Bispo(tabuleiro, cor);
+		if (tipo.equals("C")) return new Cavalo(tabuleiro, cor);
+		if (tipo.equals("Q")) return new Rainha(tabuleiro, cor);
+		return new Torre(tabuleiro, cor);
 	}
 	
 	//Método/operação 'fazerMovimento', usada acima.
